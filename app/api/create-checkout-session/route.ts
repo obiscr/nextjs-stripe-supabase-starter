@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getStripe } from '@/lib/stripe';
 import { createClient } from '@/utils/supabase/server';
 import { cookies } from 'next/headers';
+import { getBaseUrl } from '@/lib/utils';
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,6 +29,9 @@ export async function POST(request: NextRequest) {
 
     const stripe = getStripe();
 
+    // Get the base URL
+    const baseUrl = getBaseUrl(request);
+
     // Get price information to determine if it's a subscription or one-time payment
     const price = await stripe.prices.retrieve(priceId);
     
@@ -43,8 +47,8 @@ export async function POST(request: NextRequest) {
           quantity: 1,
         },
       ],
-      success_url: `${process.env.NEXT_PUBLIC_DOMAIN || 'http://localhost:3000'}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_DOMAIN || 'http://localhost:3000'}`,
+      success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}`,
       metadata: {
         itemId: itemId,
         userId: user.id,
