@@ -2,6 +2,10 @@
 
 A complete e-commerce demo built with Next.js, Stripe Checkout, and Supabase, featuring user authentication, product management, secure payment processing, and automatic purchase tracking.
 
+<img width="1339" height="1197" alt="image" src="https://github.com/user-attachments/assets/423b64f9-0302-4b2d-833d-73a603b9b159" />
+
+<img width="1343" height="1207" alt="image" src="https://github.com/user-attachments/assets/0c77af0b-d65c-4787-b56c-323dc28b258f" />
+
 ## Features
 
 - **User Authentication**: Email/password login with Supabase Auth
