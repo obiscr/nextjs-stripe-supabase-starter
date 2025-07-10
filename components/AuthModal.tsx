@@ -3,7 +3,7 @@ import { useState } from 'react';
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAuth: (email: string, password: string, mode: 'login' | 'register') => Promise<void>;
+  onAuth: (email: string, password: string, mode: 'login' | 'register') => Promise<{ success: boolean; message?: string }>;
 }
 
 export default function AuthModal({ isOpen, onClose, onAuth }: AuthModalProps) {
@@ -11,19 +11,32 @@ export default function AuthModal({ isOpen, onClose, onAuth }: AuthModalProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
+  const [message, setMessage] = useState<{ text: string; type: 'error' | 'success' } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthLoading(true);
+    setMessage(null);
     
     try {
-      await onAuth(email, password, authMode);
-      // 如果成功，重置表单
-      setEmail('');
-      setPassword('');
-      onClose();
-    } catch (error) {
-      console.error('Auth error:', error);
+      const result = await onAuth(email, password, authMode);
+      
+      if (result.success) {
+        if (result.message) {
+          setMessage({ text: result.message, type: 'success' });
+        }
+        
+        if (authMode === 'login') {
+          setEmail('');
+          setPassword('');
+          onClose();
+        } else {
+          setEmail('');
+          setPassword('');
+        }
+      }
+    } catch (error: unknown) {
+      setMessage({ text: error instanceof Error ? error.message : 'An error occurred', type: 'error' });
     } finally {
       setAuthLoading(false);
     }
@@ -33,6 +46,7 @@ export default function AuthModal({ isOpen, onClose, onAuth }: AuthModalProps) {
     setEmail('');
     setPassword('');
     setAuthMode('login');
+    setMessage(null);
     onClose();
   };
 
@@ -101,11 +115,25 @@ export default function AuthModal({ isOpen, onClose, onAuth }: AuthModalProps) {
               authMode === 'login' ? 'Login' : 'Register'
             )}
           </button>
+
+
+          {message && (
+            <div className={`text-sm p-3 rounded-md ${
+              message.type === 'error' 
+                ? 'bg-red-50 text-red-700 border border-red-200' 
+                : 'bg-green-50 text-green-700 border border-green-200'
+            }`}>
+              {message.text}
+            </div>
+          )}
         </form>
         
         <div className="mt-4 text-center">
           <button
-            onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}
+            onClick={() => {
+              setAuthMode(authMode === 'login' ? 'register' : 'login');
+              setMessage(null);
+            }}
             className="text-blue-600 hover:text-blue-800 text-sm"
           >
             {authMode === 'login' ? 'No account? Click to register' : 'Already have an account? Click to login'}

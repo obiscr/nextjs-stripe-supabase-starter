@@ -1,18 +1,14 @@
 import { loadStripe } from '@stripe/stripe-js';
 import Stripe from 'stripe';
 
-// 客户端 Stripe 配置
-// 确保客户端环境变量存在
 if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
   throw new Error('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not set');
 }
 
-// 客户端 Stripe 实例
 export const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 );
 
-// 服务端 Stripe 实例 - 延迟创建
 let stripeInstance: Stripe | null = null;
 
 export const getStripe = (): Stripe => {

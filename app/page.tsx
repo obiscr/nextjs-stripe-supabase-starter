@@ -105,9 +105,10 @@ export default function HomePage() {
       });
       
       if (error) {
-        alert(`Login failed: ${error.message}`);
-        throw error;
+        throw new Error(`Login failed: ${error.message}`);
       }
+      
+      return { success: true };
     } else {
       const { error } = await supabase.auth.signUp({
         email,
@@ -115,10 +116,12 @@ export default function HomePage() {
       });
       
       if (error) {
-        alert(`Registration failed: ${error.message}`);
-        throw error;
+        throw new Error(`Registration failed: ${error.message}`);
       } else {
-        alert('Registration successful! Please check your email for confirmation.');
+        return { 
+          success: true, 
+          message: 'Registration successful! Please check your email for confirmation.' 
+        };
       }
     }
   };
